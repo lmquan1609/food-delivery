@@ -2,6 +2,7 @@ package restaurantstorage
 
 import (
 	"context"
+	"food-delivery/common"
 	"food-delivery/modules/restaurant/restaurantmodel"
 )
 
@@ -20,7 +21,7 @@ func (s *sqlStore) FindDataByCondition(
 
 	if err := db.Where(conditions).
 		First(&result).Error; err != nil {
-		return nil, err
+		return nil, common.ErrDB(err)
 	}
 	return &result, nil
 }
