@@ -8,22 +8,28 @@ import (
 	"food-delivery/modules/restaurant/restaurantstorage"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strconv"
 )
 
-func CreateRestaurant(appCtx component.AppContext) gin.HandlerFunc {
+func UpdateRestaurant(appCtx component.AppContext) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var data restaurantmodel.RestaurantCreate
+		id, err := strconv.Atoi(c.Param("id"))
 
+		if err != nil {
+			panic(common.ErrInvalidRequest(err))
+		}
+
+		var data restaurantmodel.RestaurantUpdate
 		if err := c.ShouldBind(&data); err != nil {
 			panic(common.ErrInvalidRequest(err))
 		}
 
 		store := restaurantstorage.NewSQLStore(appCtx.GetMainDBConnection())
-		biz := restaurantbiz.NewCreateRestaurantBiz(store)
+		biz := restaurantbiz.NewUpdateRestaurantBiz(store)
 
-		if err := biz.CreateRestaurant(c.Request.Context(), &data); err != nil {
+		if err := biz.UpdateRestaurant(c.Request.Context(), id, &data); err != nil {
 			panic(err)
 		}
-		c.JSON(http.StatusOK, common.SimpleSuccessResponse(data))
+		c.JSON(http.StatusOK, common.SimpleSuccessResponse(true))
 	}
 }

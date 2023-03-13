@@ -67,6 +67,10 @@ func ErrDB(err error) *AppError {
 	return NewErrorResponse(err, "Something went wrong with DB", err.Error(), "DB_ERROR")
 }
 
+func ErrInvalidRequest(err error) *AppError {
+	return NewErrorResponse(err, "invalid request", err.Error(), "ErrInvalidRequest")
+}
+
 func ErrCannotGetEntity(entity string, err error) *AppError {
 	return NewCustomError(
 		err,
@@ -83,10 +87,28 @@ func ErrCannotDeleteEntity(entity string, err error) *AppError {
 	)
 }
 
+func ErrCannotUpdateEntity(entity string, err error) *AppError {
+	return NewCustomError(
+		err,
+		fmt.Sprintf("Cannot update %s", strings.ToLower(entity)),
+		fmt.Sprintf("ErrCannotUpdate%s", entity),
+	)
+}
+
 func ErrEntityDeleted(entity string, err error) *AppError {
 	return NewCustomError(
 		err,
 		fmt.Sprintf("%s deleted", strings.ToLower(entity)),
 		fmt.Sprintf("Err%sDeleted", entity),
+	)
+}
+
+func ErrInternal(err error) *AppError {
+	return NewFullErrorResponse(
+		http.StatusInternalServerError,
+		err,
+		"something went wrong with the server",
+		err.Error(),
+		"ErrInternal",
 	)
 }
